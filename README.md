@@ -230,3 +230,25 @@
         </body>
         </html>
 ============================================================================
+#Autor: Carlos Marquez 12:39PM 22May26
+
+#En esta seccion levantaremos todos los servicios con los comandos siguientes:
+
+        docker compose up -d
+
+Y probamos las paginas en el navegador:
+        https://app.midominio.com
+
+![alt text](image-2.png)
+
+        https://mail.midominio.com
+
+![alt text](image-3.png)
+
+        https://portainer.midominio.com
+
+![alt text](image-4.png)
+
+        https://dashboard.midominio.com
+
+![alt text](image-5.png)
