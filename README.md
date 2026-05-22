@@ -574,3 +574,78 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 ![alt text](image-8.png)
 ============================================================================
+#Autor: Carlos Márquez 02:14PM 22May26
+
+#Lo que sigue es hacer el balanceo de carga para hacer esto y hacerlo visual se agregaran 3 carpetas con un archivo index.html en su interior y con diferente color y Labels para que se identifique que realmente este haciendo el balanceo:
+
+    Dentro de la carpeta principal se agregan 3 carpetas con su respectivo index.html
+
+![alt text](image-9.png)
+
+    Actualizamos nuestro docker-compose.yml:
+
+    De:
+
+            web:
+            image: nginx:latest
+            container_name: web
+
+    A:
+
+            web1:
+                image: nginx:latest
+                container_name: web1
+
+                volumes:
+                - ./web1/index.html:/usr/share/nginx/html/index.html:ro
+
+                networks:
+                - proxy
+
+            web2:
+                image: nginx:latest
+                container_name: web2
+
+                volumes:
+                - ./web2/index.html:/usr/share/nginx/html/index.html:ro
+
+                networks:
+                - proxy
+
+            web3:
+                image: nginx:latest
+                container_name: web3
+
+                volumes:
+                - ./web3/index.html:/usr/share/nginx/html/index.html:ro
+
+                networks:
+                - proxy
+    
+    Actualizamos en archivo dynamic.yml:
+
+        y pasamos de esto:
+                web-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://web:80"
+        
+        A esto:
+
+                web-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://web1:80"
+                        - url: "http://web2:80"
+                        - url: "http://web3:80"
+        Reiniciamos:
+
+            docker stop $(docker ps -q)
+            docker compose up -d
+
+    Y para hacer la prueba solo ingresamos a la pagina https://app.midominio.com y la recargamos varias veces para ver los cambios:
+
+![alt text](image-10.png)
+![alt text](image-11.png)
+![alt text](image-12.png)
+

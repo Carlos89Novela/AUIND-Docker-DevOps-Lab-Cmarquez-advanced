@@ -40,6 +40,36 @@ services:
     networks:
       - proxy
 
+  web1:
+    image: nginx:latest
+    container_name: web1
+
+    volumes:
+      - ./web1/index.html:/usr/share/nginx/html/index.html:ro
+
+    networks:
+      - proxy
+
+  web2:
+    image: nginx:latest
+    container_name: web2
+
+    volumes:
+      - ./web2/index.html:/usr/share/nginx/html/index.html:ro
+
+    networks:
+      - proxy
+
+  web3:
+    image: nginx:latest
+    container_name: web3
+
+    volumes:
+      - ./web3/index.html:/usr/share/nginx/html/index.html:ro
+
+    networks:
+      - proxy
+
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog

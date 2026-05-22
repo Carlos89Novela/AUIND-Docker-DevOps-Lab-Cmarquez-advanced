@@ -55,7 +55,10 @@ http:
     web-service:
       loadBalancer:
         servers:
-          - url: "http://web:80"
+          - url: "http://web1:80"
+          - url: "http://web2:80"
+          - url: "http://web3:80"
+
 
     mailhog-service:
       loadBalancer:
