@@ -2,30 +2,67 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Nginx 2</title>
+  <title>Nginx 2 Docker + Traefik</title>
+
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #7c3aed;
-      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      height: 100vh;
+
+      /* Fondo degradado naranja a rojo */
+      background: linear-gradient(135deg, #f97316, #dc2626);
+
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      color: white;
     }
-    .box {
+
+    .container {
       text-align: center;
-      background: rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.1);
       padding: 40px;
       border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 8px 0;
+    }
+
+    .highlight {
+      color: #fed7aa;
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>⚡ Servidor WEB 2</h1>
-    <p>Balanceado por Traefik</p>
+
+  <div class="container">
+    <h1>🚀 Hola los saludamos el equipo de Carlos Marquez</h1>
+
+    <p>Estás dentro de <span class="highlight">Docker Compose</span></p>
+    <p>Tu aplicación está funcionando correctamente ✅</p>
+
+    <p>Utilizando <span class="highlight">Traefik</span> como Reverse Proxy</p>
+
+    <p style="margin-top: 20px;">
+      🎉 ¡Todo está configurado correctamente!
+    </p>
+
+    <p style="margin-top: 20px;">
+      🔹 <span class="highlight">Nginx 2 - Web 2</span>
+    </p>
   </div>
+
 </body>
 </html>

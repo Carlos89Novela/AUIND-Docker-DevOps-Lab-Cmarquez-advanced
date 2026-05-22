@@ -645,7 +645,7 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
     Y para hacer la prueba solo ingresamos a la pagina https://app.midominio.com y la recargamos varias veces para ver los cambios:
 
-![alt text](image-10.png)
-![alt text](image-11.png)
-![alt text](image-12.png)
+![alt text](image-13.png)
+![alt text](image-14.png)
+![alt text](image-15.png)
 
