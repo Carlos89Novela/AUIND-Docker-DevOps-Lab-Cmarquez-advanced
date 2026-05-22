@@ -10,7 +10,11 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
 
-      # SOLO file provider
+      # Redirección automática HTTP -> HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      # Solo file provider
       - "--providers.file.filename=/etc/traefik/dynamic.yml"
 
       - "--log.level=DEBUG"
@@ -33,9 +37,6 @@ services:
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html:ro
 
-    ports:
-      - "8088:80"
-
     networks:
       - proxy
 
@@ -45,7 +46,6 @@ services:
 
     ports:
       - "1025:1025"
-      - "8025:8025"
 
     networks:
       - proxy
@@ -60,8 +60,54 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
 
-    ports:
-      - "9000:9000"
+    networks:
+      - proxy
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+
+    environment:
+      POSTGRES_DB: laboratorio
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - proxy
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+
+    networks:
+      - proxy
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wp123
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - proxy
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
 
     networks:
       - proxy
@@ -81,6 +127,8 @@ services:
 
 volumes:
   portainer_data:
+  postgres_data:
+  mysql_data:
   redis_data:
 
 networks:

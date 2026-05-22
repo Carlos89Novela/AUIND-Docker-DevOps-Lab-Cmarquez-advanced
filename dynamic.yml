@@ -21,6 +21,20 @@ http:
       service: portainer-service
       tls: {}
 
+    adminer:
+      rule: "Host(`adminer.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: adminer-service
+      tls: {}
+
+    phpmyadmin:
+      rule: "Host(`phpmyadmin.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: phpmyadmin-service
+      tls: {}
+
     dashboard:
       rule: "Host(`dashboard.midominio.com`)"
       entryPoints:
@@ -32,17 +46,27 @@ http:
     web-service:
       loadBalancer:
         servers:
-          - url: "http://host.docker.internal:8088"
+          - url: "http://web:80"
 
     mailhog-service:
       loadBalancer:
         servers:
-          - url: "http://host.docker.internal:8025"
+          - url: "http://mailhog:8025"
 
     portainer-service:
       loadBalancer:
         servers:
-          - url: "http://host.docker.internal:9000"
+          - url: "http://portainer:9000"
+
+    adminer-service:
+      loadBalancer:
+        servers:
+          - url: "http://adminer:8080"
+
+    phpmyadmin-service:
+      loadBalancer:
+        servers:
+          - url: "http://phpmyadmin:80"
 
 tls:
   certificates:

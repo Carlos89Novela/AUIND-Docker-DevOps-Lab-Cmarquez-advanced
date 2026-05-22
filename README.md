@@ -252,3 +252,268 @@ Y probamos las paginas en el navegador:
         https://dashboard.midominio.com
 
 ![alt text](image-5.png)
+============================================================================
+#Autor: Carlos Márquez 01:27PM 22May26
+
+#PostgresSQL, Adminer, MySQL y phpMyAdmin
+
+Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregaremos las lineas de los servicios PostgresSQL, Adminer, MySQL y phpMyAdmin y nos quedara de la siguiente manera:
+
+        services:
+            traefik:
+                image: traefik:v2.10
+                container_name: traefik
+
+                command:
+                - "--api.dashboard=true"
+                - "--api.insecure=false"
+
+                - "--entrypoints.web.address=:80"
+                - "--entrypoints.websecure.address=:443"
+
+                # Redirección automática HTTP -> HTTPS
+                - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+                - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+                # Solo file provider
+                - "--providers.file.filename=/etc/traefik/dynamic.yml"
+
+                - "--log.level=DEBUG"
+
+                ports:
+                - "80:80"
+                - "443:443"
+
+                volumes:
+                - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
+                - ./certs:/certs:ro
+
+                networks:
+                - proxy
+
+            web:
+                image: nginx:latest
+                container_name: web
+
+                volumes:
+                - ./index.html:/usr/share/nginx/html/index.html:ro
+
+                networks:
+                - proxy
+
+            mailhog:
+                image: mailhog/mailhog
+                container_name: mailhog
+
+                ports:
+                - "1025:1025"
+
+                networks:
+                - proxy
+
+            portainer:
+                image: portainer/portainer-ce:latest
+                container_name: portainer
+
+                command: -H unix:///var/run/docker.sock
+
+                volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+                - portainer_data:/data
+
+                networks:
+                - proxy
+
+            postgres:
+                image: postgres:16
+                container_name: postgres
+
+                environment:
+                POSTGRES_DB: laboratorio
+                POSTGRES_USER: admin
+                POSTGRES_PASSWORD: admin123
+
+                volumes:
+                - postgres_data:/var/lib/postgresql/data
+
+                networks:
+                - proxy
+
+            adminer:
+                image: adminer:latest
+                container_name: adminer
+
+                networks:
+                - proxy
+
+            mysql:
+                image: mysql:8
+                container_name: mysql
+
+                environment:
+                MYSQL_ROOT_PASSWORD: root123
+                MYSQL_DATABASE: wordpress
+                MYSQL_USER: wpuser
+                MYSQL_PASSWORD: wp123
+
+                volumes:
+                - mysql_data:/var/lib/mysql
+
+                networks:
+                - proxy
+
+            phpmyadmin:
+                image: phpmyadmin/phpmyadmin
+                container_name: phpmyadmin
+
+                environment:
+                PMA_HOST: mysql
+                PMA_PORT: 3306
+
+                networks:
+                - proxy
+
+            redis:
+                image: redis:7-alpine
+                container_name: redis
+
+                ports:
+                - "6379:6379"
+
+                volumes:
+                - redis_data:/data
+
+                networks:
+                - proxy
+
+            volumes:
+            portainer_data:
+            postgres_data:
+            mysql_data:
+            redis_data:
+
+            networks:
+            proxy:
+                driver: bridge
+    
+    De este mismo modo tambien agregaremos lo necesario en nuestro archivo "dynamic.yml" lo cual queda de la siguiente manera:
+
+            http:
+                routers:
+                    web:
+                    rule: "Host(`app.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: web-service
+                    tls: {}
+
+                    mailhog:
+                    rule: "Host(`mail.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: mailhog-service
+                    tls: {}
+
+                    portainer:
+                    rule: "Host(`portainer.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: portainer-service
+                    tls: {}
+
+                    adminer:
+                    rule: "Host(`adminer.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: adminer-service
+                    tls: {}
+
+                    phpmyadmin:
+                    rule: "Host(`phpmyadmin.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: phpmyadmin-service
+                    tls: {}
+
+                    dashboard:
+                    rule: "Host(`dashboard.midominio.com`)"
+                    entryPoints:
+                        - websecure
+                    service: api@internal
+                    tls: {}
+
+                services:
+                    web-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://web:80"
+
+                    mailhog-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://mailhog:8025"
+
+                    portainer-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://portainer:9000"
+
+                    adminer-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://adminer:8080"
+
+                    phpmyadmin-service:
+                    loadBalancer:
+                        servers:
+                        - url: "http://phpmyadmin:80"
+
+                tls:
+                certificates:
+                    - certFile: /certs/cert.pem
+                    keyFile: /certs/key.pem
+
+    Ya que tengamos todo lo que haremos es dar de baja todo, eliminar y volver a crear los contenedores con los siguientes comandos:
+
+        docker stop $(docker ps -q)
+        docker rm $(docker ps -aq)
+        docker compose up -d 
+
+    Agregaremos al archivo hosts lo necesario y queda asi:
+
+        127.0.0.1 app.midominio.com
+        127.0.0.1 mail.midominio.com
+        127.0.0.1 portainer.midominio.com
+        127.0.0.1 adminer.midominio.com
+        127.0.0.1 phpmyadmin.midominio.com
+        127.0.0.1 dashboard.midominio.com
+
+    Los datos que se usaran para ingresar a Postgres son los siguientes:
+
+        System: PostgreSQL
+        Server: postgres
+        Username: admin
+        Password: admin123
+        Database: laboratorio
+
+    y para phpMyAdmin son los siguientes:
+
+        usa:
+            Servidor: normalmente ya tomará mysql
+            Usuario: root
+            Contraseña: root123
+
+        O también puedes usar:
+
+            Usuario: wpuser
+            Contraseña: wp123
+
+    y veremos algo como lo siguiente:
+
+        #PostgresSQL:
+
+![alt text](image-6.png)
+
+        #phpMyAdmin:
+
+![alt text](image-7.png)
