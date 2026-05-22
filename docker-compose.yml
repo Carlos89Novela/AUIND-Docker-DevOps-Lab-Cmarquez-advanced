@@ -112,6 +112,22 @@ services:
     networks:
       - proxy
 
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wp123
+
+    volumes:
+      - wordpress_data:/var/www/html
+
+    networks:
+      - proxy
+
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -130,6 +146,7 @@ volumes:
   postgres_data:
   mysql_data:
   redis_data:
+  wordpress_data:
 
 networks:
   proxy:

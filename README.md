@@ -517,3 +517,60 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
         #phpMyAdmin:
 
 ![alt text](image-7.png)
+
+============================================================================
+#Autor: Carlos Márquez 01:54PM 22May26
+
+#En esta ocacion instalaremos WordPress como nuestro blog usando un subdominio blog.midominio.com y comenzaremos modificando nuestro docker-compose.yml y lo que haremos sera lo siguiente:
+
+    Añadiremos el siguiente bloque en el apartado de Services:
+
+            wordpress:
+            image: wordpress:latest
+            container_name: wordpress
+
+            environment:
+            WORDPRESS_DB_HOST: mysql:3306
+            WORDPRESS_DB_NAME: wordpress
+            WORDPRESS_DB_USER: wpuser
+            WORDPRESS_DB_PASSWORD: wp123
+
+            volumes:
+            - wordpress_data:/var/www/html
+
+            networks:
+            - proxy
+
+    Despues abajo en volumes agregamos lo siguiente:
+
+        wordpress_data:
+
+    Ahora actualizaremos el archivo dynamic.yml y agregamos lo siguiente:
+
+            
+        wordpress:
+            rule: "Host(`blog.midominio.com`)"
+            entryPoints:
+                - websecure
+            service: wordpress-service
+            tls: {}
+
+    Y en el apartado de services agregamos lo siguiente:
+
+        wordpress-service:
+            loadBalancer:
+                servers:
+                - url: "http://wordpress:80"    
+
+    y volvemos a detener, eliminar y volver a dar de alta los servicios:
+
+        docker stop $(docker ps -q)
+        docker rm $(docker ps -aq)
+        docker compose up -d 
+
+    y probamos ingresando a la web:
+
+        https://blog.midominio.com
+
+![alt text](image-8.png)
+============================================================================
