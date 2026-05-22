@@ -578,19 +578,19 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 #Lo que sigue es hacer el balanceo de carga para hacer esto y hacerlo visual se agregaran 3 carpetas con un archivo index.html en su interior y con diferente color y Labels para que se identifique que realmente este haciendo el balanceo:
 
-    Dentro de la carpeta principal se agregan 3 carpetas con su respectivo index.html
+    #Dentro de la carpeta principal se agregan 3 carpetas con su respectivo index.html
 
 ![alt text](image-9.png)
 
-    Actualizamos nuestro docker-compose.yml:
+    #Actualizamos nuestro docker-compose.yml:
 
-    De:
+    #De:
 
             web:
             image: nginx:latest
             container_name: web
 
-    A:
+    #A:
 
             web1:
                 image: nginx:latest
@@ -622,15 +622,15 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
                 networks:
                 - proxy
     
-    Actualizamos en archivo dynamic.yml:
+    #Actualizamos en archivo dynamic.yml:
 
-        y pasamos de esto:
+        #y pasamos de esto:
                 web-service:
                     loadBalancer:
                         servers:
                         - url: "http://web:80"
         
-        A esto:
+        #A esto:
 
                 web-service:
                     loadBalancer:
@@ -638,12 +638,12 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
                         - url: "http://web1:80"
                         - url: "http://web2:80"
                         - url: "http://web3:80"
-        Reiniciamos:
+        #Reiniciamos:
 
             docker stop $(docker ps -q)
             docker compose up -d
 
-    Y para hacer la prueba solo ingresamos a la pagina https://app.midominio.com y la recargamos varias veces para ver los cambios:
+Y para hacer la prueba solo ingresamos a la pagina https://app.midominio.com y la recargamos varias veces para ver los cambios:
 
 ![alt text](image-13.png)
 ![alt text](image-14.png)
