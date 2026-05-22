@@ -22,6 +22,8 @@
         cert.pem
         key-pem
 
+![alt text](image.png)
+
     Despues creamos el docker-compose.yml con el siguiente bloque de codigo:
 
         services:
@@ -105,13 +107,68 @@
                 networks:
                 - proxy
 
-            volumes:
+        volumes:
             portainer_data:
             redis_data:
 
-            networks:
+        networks:
             proxy:
                 driver: bridge
-==========================================================================================================================================
 
+![alt text](image-1.png)
+============================================================================
+#Autor: Carlos Marquez 12:27PM 22May26
 
+#Ahora Crearemos el archivo dynamic.yml, ya que sin el no es posible seguir con HTTPS ya que lanzaba una serie de errores y con esto se evitan este archivo que lleva el siguiente bloque de codigo:
+
+        http:
+            routers:
+                web:
+                rule: "Host(`app.midominio.com`)"
+                entryPoints:
+                    - websecure
+                service: web-service
+                tls: {}
+
+                mailhog:
+                rule: "Host(`mail.midominio.com`)"
+                entryPoints:
+                    - websecure
+                service: mailhog-service
+                tls: {}
+
+                portainer:
+                rule: "Host(`portainer.midominio.com`)"
+                entryPoints:
+                    - websecure
+                service: portainer-service
+                tls: {}
+
+                dashboard:
+                rule: "Host(`dashboard.midominio.com`)"
+                entryPoints:
+                    - websecure
+                service: api@internal
+                tls: {}
+
+            services:
+                web-service:
+                loadBalancer:
+                    servers:
+                    - url: "http://host.docker.internal:8088"
+
+                mailhog-service:
+                loadBalancer:
+                    servers:
+                    - url: "http://host.docker.internal:8025"
+
+                portainer-service:
+                loadBalancer:
+                    servers:
+                    - url: "http://host.docker.internal:9000"
+
+            tls:
+            certificates:
+                - certFile: /certs/cert.pem
+                keyFile: /certs/key.pem
+============================================================================

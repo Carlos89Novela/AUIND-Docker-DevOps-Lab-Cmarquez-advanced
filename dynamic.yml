@@ -1,0 +1,50 @@
+http:
+  routers:
+    web:
+      rule: "Host(`app.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: web-service
+      tls: {}
+
+    mailhog:
+      rule: "Host(`mail.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: mailhog-service
+      tls: {}
+
+    portainer:
+      rule: "Host(`portainer.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: portainer-service
+      tls: {}
+
+    dashboard:
+      rule: "Host(`dashboard.midominio.com`)"
+      entryPoints:
+        - websecure
+      service: api@internal
+      tls: {}
+
+  services:
+    web-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8088"
+
+    mailhog-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8025"
+
+    portainer-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:9000"
+
+tls:
+  certificates:
+    - certFile: /certs/cert.pem
+      keyFile: /certs/key.pem
