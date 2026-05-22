@@ -17,14 +17,16 @@
                 └─ key.pem
 
 
-    Primero crearemos un carpeta llamada certs y aqui guardaremos nuestros certificados que creamos y quedarian asi:
+#Primero crearemos un carpeta llamada certs y aqui guardaremos nuestros certificados que creamos y quedarian asi:
+
 
         cert.pem
         key-pem
 
 ![alt text](image.png)
 
-    Despues creamos el docker-compose.yml con el siguiente bloque de codigo:
+#Despues creamos el docker-compose.yml con el siguiente bloque de codigo:
+
 
         services:
             traefik:
@@ -121,6 +123,7 @@
 
 #Ahora Crearemos el archivo dynamic.yml, ya que sin el no es posible seguir con HTTPS ya que lanzaba una serie de errores y con esto se evitan este archivo que lleva el siguiente bloque de codigo:
 
+
         http:
             routers:
                 web:
@@ -175,6 +178,7 @@
 #Autor: Carlos Marquez 12:34PM 22May26
 
 #Ahora seguimos con la creación del archivo index.html, solo para que se muestre una pagina, esta misma la creamos con un poco de ayuda de la IA y aqui se muestra el codigo:
+
 
         <!DOCTYPE html>
         <html lang="es">
@@ -234,9 +238,13 @@
 
 #En esta seccion levantaremos todos los servicios con los comandos siguientes:
 
+
         docker compose up -d
 
-Y probamos las paginas en el navegador:
+
+#Y probamos las paginas en el navegador:
+
+
         https://app.midominio.com
 
 ![alt text](image-2.png)
@@ -257,7 +265,9 @@ Y probamos las paginas en el navegador:
 
 #PostgresSQL, Adminer, MySQL y phpMyAdmin
 
-Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregaremos las lineas de los servicios PostgresSQL, Adminer, MySQL y phpMyAdmin y nos quedara de la siguiente manera:
+#Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregaremos las lineas de los servicios PostgresSQL, Adminer, MySQL y phpMyAdmin y nos quedara de la siguiente manera:
+
+
 
         services:
             traefik:
@@ -395,8 +405,12 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
             networks:
             proxy:
                 driver: bridge
+
+
     
-    De este mismo modo tambien agregaremos lo necesario en nuestro archivo "dynamic.yml" lo cual queda de la siguiente manera:
+#De este mismo modo tambien agregaremos lo necesario en nuestro archivo "dynamic.yml" lo cual queda de la siguiente manera:
+
+
 
             http:
                 routers:
@@ -473,13 +487,16 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
                     - certFile: /certs/cert.pem
                     keyFile: /certs/key.pem
 
-    Ya que tengamos todo lo que haremos es dar de baja todo, eliminar y volver a crear los contenedores con los siguientes comandos:
+
+#Ya que tengamos todo lo que haremos es dar de baja todo, eliminar y volver a crear los contenedores con los siguientes comandos:
+
 
         docker stop $(docker ps -q)
         docker rm $(docker ps -aq)
         docker compose up -d 
 
-    Agregaremos al archivo hosts lo necesario y queda asi:
+#Agregaremos al archivo hosts lo necesario y queda asi:
+
 
         127.0.0.1 app.midominio.com
         127.0.0.1 mail.midominio.com
@@ -488,7 +505,8 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
         127.0.0.1 phpmyadmin.midominio.com
         127.0.0.1 dashboard.midominio.com
 
-    Los datos que se usaran para ingresar a Postgres son los siguientes:
+#Los datos que se usaran para ingresar a Postgres son los siguientes:
+
 
         System: PostgreSQL
         Server: postgres
@@ -496,25 +514,29 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
         Password: admin123
         Database: laboratorio
 
-    y para phpMyAdmin son los siguientes:
+#y para phpMyAdmin son los siguientes:
 
-        usa:
+
+#usa:
+
             Servidor: normalmente ya tomará mysql
             Usuario: root
             Contraseña: root123
 
-        O también puedes usar:
+#O también puedes usar:
+
 
             Usuario: wpuser
             Contraseña: wp123
 
-    y veremos algo como lo siguiente:
+#y veremos algo como lo siguiente:
 
-        #PostgresSQL:
+
+#PostgresSQL:
 
 ![alt text](image-6.png)
 
-        #phpMyAdmin:
+#phpMyAdmin:
 
 ![alt text](image-7.png)
 
@@ -523,7 +545,8 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 #En esta ocacion instalaremos WordPress como nuestro blog usando un subdominio blog.midominio.com y comenzaremos modificando nuestro docker-compose.yml y lo que haremos sera lo siguiente:
 
-    Añadiremos el siguiente bloque en el apartado de Services:
+#Añadiremos el siguiente bloque en el apartado de Services:
+
 
             wordpress:
             image: wordpress:latest
@@ -541,11 +564,14 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
             networks:
             - proxy
 
-    Despues abajo en volumes agregamos lo siguiente:
+#Despues abajo en volumes agregamos lo siguiente:
+
+
 
         wordpress_data:
 
-    Ahora actualizaremos el archivo dynamic.yml y agregamos lo siguiente:
+#Ahora actualizaremos el archivo dynamic.yml y agregamos lo siguiente:
+
 
             
         wordpress:
@@ -555,20 +581,24 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
             service: wordpress-service
             tls: {}
 
-    Y en el apartado de services agregamos lo siguiente:
+#Y en el apartado de services agregamos lo siguiente:
+
 
         wordpress-service:
             loadBalancer:
                 servers:
                 - url: "http://wordpress:80"    
 
-    y volvemos a detener, eliminar y volver a dar de alta los servicios:
+#y volvemos a detener, eliminar y volver a dar de alta los servicios:
+
 
         docker stop $(docker ps -q)
         docker rm $(docker ps -aq)
         docker compose up -d 
 
-    y probamos ingresando a la web:
+#y probamos ingresando a la web:
+
+
 
         https://blog.midominio.com
 
@@ -584,7 +614,10 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 #Actualizamos nuestro docker-compose.yml:
 
+
+
 #De:
+
 
 
             web:
@@ -593,6 +626,7 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 
 #A:
+
 
 
             web1:
@@ -628,13 +662,18 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
     
 #Actualizamos en archivo dynamic.yml:
 
+
+
 #y pasamos de esto:
+
+
                 web-service:
                     loadBalancer:
                         servers:
                         - url: "http://web:80"
         
 #A esto:
+
 
                 web-service:
                     loadBalancer:
@@ -646,10 +685,13 @@ Lo primero que haremos sera actualizar el archivo "docker-compose.yml" y agregar
 
 #Reiniciamos:
 
+
             docker stop $(docker ps -q)
             docker compose up -d
 
 #Y para hacer la prueba solo ingresamos a la pagina https://app.midominio.com y la recargamos varias veces para ver los cambios:
+
+
 
 ![alt text](image-13.png)
 ![alt text](image-14.png)
